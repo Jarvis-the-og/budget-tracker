@@ -198,7 +198,8 @@ export default function BudgetTracker() {
     try {
       await API.delete(`/auth/delete/${id}`);
       fetchTransactions();
-    } catch {
+    } catch (err) {
+      console.error("Delete error:", err.response?.data || err.message);
       alert("Delete failed");
     }
   };
