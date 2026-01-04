@@ -198,8 +198,7 @@ export default function BudgetTracker() {
     try {
       await API.delete(`/auth/delete/${id}`);
       fetchTransactions();
-    } catch (err) {
-      console.error("Delete error:", err.response?.data || err.message);
+    } catch {
       alert("Delete failed");
     }
   };
@@ -750,7 +749,7 @@ export default function BudgetTracker() {
                 </thead>
                 <tbody>
                   {visibleTransactions.map(transaction => (
-                    <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <tr key={transaction._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{transaction.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 py-1 text-xs font-medium rounded-full ${transaction.type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{transaction.type}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{transaction.category}</td>
@@ -759,7 +758,7 @@ export default function BudgetTracker() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex gap-2">
                           <button onClick={() => editTransaction(transaction)} className="text-blue-600 hover:text-blue-800"><Edit2 /></button>
-                          <button onClick={() => deleteTransaction(transaction.id)} className="text-red-600 hover:text-red-800"><Trash2 /></button>
+                          <button onClick={() => deleteTransaction(transaction._id)} className="text-red-600 hover:text-red-800"><Trash2 /></button>
                         </div>
                       </td>
                     </tr>
