@@ -263,11 +263,14 @@ app.delete("/auth/delete/:tid", verifyJWT, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.sendStatus(404);
 
-    const transaction = user.transactions.id(req.params.tid);
-    if (!transaction) return res.sendStatus(404);
+    const before = user.transactions.length;
 
-    transaction.deleteOne();
+    user.transactions.pull(req.params.tid);
     await user.save();
+
+    if (user.transactions.length === before) {
+      return res.sendStatus(404);
+    }
 
     res.json({ message: "Transaction deleted" });
   } catch (err) {

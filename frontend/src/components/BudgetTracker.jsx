@@ -170,23 +170,31 @@ export default function BudgetTracker() {
     setTransactions([]);
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- Transaction CRUD
-  const handleSubmit = async () => {
-    try {
-      if (editingTransaction) {
-        await API.put(`/auth/update/${editingTransaction._id}`, formData);
-      } else {
-        await API.post("/auth/create", formData);
-      }
+const handleSubmit = async () => {
+  if (isSubmitting) return; // 🛑 block multi-click
 
-      fetchTransactions();
-      setShowAddModal(false);
-      setEditingTransaction(null);
-    } catch (err) {
-      alert("Failed to save transaction");
+  setIsSubmitting(true);
+
+  try {
+    if (editingTransaction) {
+      await API.put(`/auth/update/${editingTransaction._id}`, formData);
+    } else {
+      await API.post("/auth/create", formData);
     }
-  };
+
+    fetchTransactions();
+    setShowAddModal(false);
+    setEditingTransaction(null);
+  } catch (err) {
+    alert("Failed to save transaction");
+  } finally {
+    setIsSubmitting(false); // ✅ always reset
+  }
+};
+
 
   const monthTransactions = useMemo(() => {
     return transactions.filter(
@@ -914,7 +922,19 @@ export default function BudgetTracker() {
 
               <div className="flex gap-3 pt-4">
                 <button onClick={() => { setShowAddModal(false); setEditingTransaction(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                <button onClick={handleSubmit} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">{editingTransaction ? 'Update' : 'Add'}</button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className={`flex-1 px-4 py-2 rounded-lg text-white
+                    ${isSubmitting
+                      ? "bg-blue-300 cursor-not-allowed"
+                      : "bg-blue-500 hover:bg-blue-600"
+                    }`}
+                >
+                  {isSubmitting
+                    ? (editingTransaction ? "Updating..." : "Adding...")
+                    : (editingTransaction ? "Update" : "Add")}
+                </button>
               </div>
             </div>
           </div>
