@@ -89,5 +89,6 @@ Start Frontend
 cd frontend
 npm start
 Frontend runs on: http://localhost:3000
-## 📂 Project Structure
 
+📜 License
+This project is licensed under the MIT License.
